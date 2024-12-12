@@ -30,6 +30,7 @@ public with sharing class TriggerTest {
     * When an account is inserted change the account type to 'Prospect' if there is no value in the type field.
     * Trigger should only fire on insert.
     */
+
     @IsTest 
     static void testAccountTrigger_setTypeProspect() {
         // Prepare the test data
@@ -55,6 +56,7 @@ public with sharing class TriggerTest {
         
         // Retrieve the accounts again
         List<Account> prospectAccounts = [SELECT Id, Type FROM Account WHERE Type = 'Prospect'];
+        System.debug('##Prospect Accounts inserted is ' +prospectAccounts.size() );
 
         // Assert that the number of accounts inserted is correct
         System.assertEquals(200, prospectAccounts.size(), 'Number of accounts inserted is incorrect.');
@@ -213,7 +215,12 @@ public with sharing class TriggerTest {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
         for (Integer i = 0; i < 400; i++) {
-            Account acc = new Account(Name = 'Test Account ' + i);
+            Account acc = new Account(Name = 'Test Account ' + i,
+            ShippingStreet = '123 Test St',
+            ShippingCity = 'Test City',
+            ShippingState = 'Test State',
+            ShippingPostalCode = '12345',
+            ShippingCountry = 'Test Country');
             accountsToInsert.add(acc);
         }
 
@@ -225,8 +232,11 @@ public with sharing class TriggerTest {
         Database.insert(accountsToInsert, dml);
         Test.stopTest();
 
+        List<Account> insertedAccounts = [SELECT Id, createdDate FROM Account WHERE Name LIKE 'Test Account%' AND createdDate = TODAY];
+
+
         // Retrieve the newly created Contacts
-        List<Contact> contacts = [SELECT Id, LastName, Email, AccountId FROM Contact WHERE AccountId IN :accountsToInsert];
+        List<Contact> contacts = [SELECT Id, LastName, Email, AccountId FROM Contact WHERE AccountId IN :insertedAccounts];
 
         // Assert that the correct number of Contacts has been created
         System.assertEquals(400, contacts.size(), 'Incorrect number of Contacts created.');
@@ -257,7 +267,7 @@ public with sharing class TriggerTest {
     * Error Message: 'Opportunity amount must be greater than 5000'
     * Trigger should only fire on update.
     */
-    @IsTest
+   @IsTest
     static void testOpportunityTrigger_amountValidation() {
         // Prepare the test data
         List<Opportunity> opportunitiesToInsert = new List<Opportunity>();
