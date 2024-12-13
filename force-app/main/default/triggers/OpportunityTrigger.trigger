@@ -2,7 +2,6 @@ trigger OpportunityTrigger on Opportunity (before update,after update, before de
 
   // Prevent recursive updates
   if (OpportunityTriggerHandler.isTriggerExecuted) {
-
       return;
   }
   OpportunityTriggerHandler.isTriggerExecuted = true;
@@ -11,7 +10,6 @@ trigger OpportunityTrigger on Opportunity (before update,after update, before de
   if (Trigger.isBefore && Trigger.isUpdate) {
 
     for (Opportunity opp : Trigger.new){
-
       if (opp.Amount <=5000) {
         opp.addError('Opportunity amount must be greater than 5000');
       }
@@ -21,7 +19,6 @@ trigger OpportunityTrigger on Opportunity (before update,after update, before de
 
   // Before Delete
   if (Trigger.isBefore && Trigger.isDelete){
-
     Set<Id> accountId = new Set<Id>();
     
     for(Opportunity opp : Trigger.old) {
@@ -29,9 +26,9 @@ trigger OpportunityTrigger on Opportunity (before update,after update, before de
           opp.AccountId != null){
 
             accountId.add(opp.AccountId);
-           }
+          }
     }
- 
+
     //query the accounts with the matching Id from the set
     Map<Id, Account> accountMap = new Map<Id, Account>([SELECT Id, Industry 
                                                       FROM Account WHERE Id IN :accountId ]);

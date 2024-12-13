@@ -38,9 +38,19 @@ public with sharing class TriggerTest {
         List<Account> accountTypeNotChange = new List<Account>();
         for(Integer i = 0; i < 400; i++) {
             if (Math.mod(i, 2) == 0){
-                accountTypeProspect.add(new Account(Name = 'Test Account ' + i));
+                accountTypeProspect.add(new Account(Name = 'Test Account ' + i, ShippingStreet = '123 Test St',
+                ShippingCity = 'Test City',
+                ShippingState = 'Test State',
+                ShippingPostalCode = '12345',
+                ShippingCountry = 'Test Country'
+                ));
             } else {
-                accountTypeNotChange.add(new Account(Name = 'Test Account ' + i, Type = 'Customer'));
+                accountTypeNotChange.add(new Account(Name = 'Test Account ' + i, Type = 'Customer',
+                ShippingStreet = '123 Test St',
+                ShippingCity = 'Test City',
+                ShippingState = 'Test State',
+                ShippingPostalCode = '12345',
+                ShippingCountry = 'Test Country'));
             }
             
         }
@@ -56,9 +66,7 @@ public with sharing class TriggerTest {
         
         // Retrieve the accounts again
         List<Account> prospectAccounts = [SELECT Id, Type FROM Account WHERE Type = 'Prospect'];
-        System.debug('##Prospect Accounts inserted is ' +prospectAccounts.size() );
-
-        // Assert that the number of accounts inserted is correct
+           // Assert that the number of accounts inserted is correct
         System.assertEquals(200, prospectAccounts.size(), 'Number of accounts inserted is incorrect.');
         
         // Assert that the Type of each account is 'Prospect'
@@ -92,7 +100,7 @@ public with sharing class TriggerTest {
         List<Account> accountsToInsert = new List<Account>();
         for (Integer i = 0; i < 200; i++) {
             Account acc = new Account(
-                Name = 'Test Account ' + i,
+                Name = 'Test Account' + i,
                 ShippingStreet = '123 Test St ' + i,
                 ShippingCity = 'Test City ' + i,
                 ShippingState = 'TS',
@@ -110,14 +118,14 @@ public with sharing class TriggerTest {
 
         // Retrieve the accounts again
         List<Account> insertedAccounts = [SELECT Id, 
-                                          BillingStreet, 
-                                          BillingCity, 
-                                          BillingState, 
-                                          BillingPostalCode, 
-                                          BillingCountry 
-                                          FROM Account 
-                                          WHERE Id IN :accountsToInsert
-                                          ORDER BY AnnualRevenue ASC];
+                                        BillingStreet, 
+                                        BillingCity, 
+                                        BillingState, 
+                                        BillingPostalCode, 
+                                        BillingCountry 
+                                        FROM Account 
+                                        WHERE Id IN :accountsToInsert
+                                        ORDER BY AnnualRevenue ASC];
 
         // Assert that the Billing Address fields have been correctly copied from the Shipping Address for each account
         for (Integer i = 0; i < insertedAccounts.size(); i++) {
@@ -323,7 +331,12 @@ public with sharing class TriggerTest {
     @IsTest
     static void testOpportunityTrigger_deleteCloseWonOpportunity() {
         // Prepare the test data
-        Account testAccount = new Account(Name = 'Test Account', Industry = 'Banking');
+        Account testAccount = new Account(Name = 'Test Account', Industry = 'Banking',
+        ShippingStreet = '123 Test St',
+        ShippingCity = 'Test City',
+        ShippingState = 'Test State',
+        ShippingPostalCode = '12345',
+        ShippingCountry = 'Test Country');
         insert testAccount;
 
         List<Opportunity> opportunitiesToInsert = new List<Opportunity>();
@@ -361,7 +374,12 @@ public with sharing class TriggerTest {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
         for (Integer i = 0; i < 10; i++) {
-            Account testAccount = new Account(Name = 'Test Account ' + i);
+            Account testAccount = new Account(Name = 'Test Account ' + i,
+            ShippingStreet = '123 Test St',
+            ShippingCity = 'Test City',
+            ShippingState = 'Test State',
+            ShippingPostalCode = '12345',
+            ShippingCountry = 'Test Country');
             accountsToInsert.add(testAccount);
         }
         
