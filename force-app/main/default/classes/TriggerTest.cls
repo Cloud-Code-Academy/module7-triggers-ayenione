@@ -30,6 +30,7 @@ public with sharing class TriggerTest {
     * When an account is inserted change the account type to 'Prospect' if there is no value in the type field.
     * Trigger should only fire on insert.
     */
+
     @IsTest 
     static void testAccountTrigger_setTypeProspect() {
         // Prepare the test data
@@ -37,9 +38,19 @@ public with sharing class TriggerTest {
         List<Account> accountTypeNotChange = new List<Account>();
         for(Integer i = 0; i < 400; i++) {
             if (Math.mod(i, 2) == 0){
-                accountTypeProspect.add(new Account(Name = 'Test Account ' + i));
+                accountTypeProspect.add(new Account(Name = 'Test Account ' + i, ShippingStreet = '123 Test St',
+                ShippingCity = 'Test City',
+                ShippingState = 'Test State',
+                ShippingPostalCode = '12345',
+                ShippingCountry = 'Test Country'
+                ));
             } else {
-                accountTypeNotChange.add(new Account(Name = 'Test Account ' + i, Type = 'Customer'));
+                accountTypeNotChange.add(new Account(Name = 'Test Account ' + i, Type = 'Customer',
+                ShippingStreet = '123 Test St',
+                ShippingCity = 'Test City',
+                ShippingState = 'Test State',
+                ShippingPostalCode = '12345',
+                ShippingCountry = 'Test Country'));
             }
             
         }
@@ -55,8 +66,7 @@ public with sharing class TriggerTest {
         
         // Retrieve the accounts again
         List<Account> prospectAccounts = [SELECT Id, Type FROM Account WHERE Type = 'Prospect'];
-
-        // Assert that the number of accounts inserted is correct
+           // Assert that the number of accounts inserted is correct
         System.assertEquals(200, prospectAccounts.size(), 'Number of accounts inserted is incorrect.');
         
         // Assert that the Type of each account is 'Prospect'
@@ -90,7 +100,7 @@ public with sharing class TriggerTest {
         List<Account> accountsToInsert = new List<Account>();
         for (Integer i = 0; i < 200; i++) {
             Account acc = new Account(
-                Name = 'Test Account ' + i,
+                Name = 'Test Account' + i,
                 ShippingStreet = '123 Test St ' + i,
                 ShippingCity = 'Test City ' + i,
                 ShippingState = 'TS',
@@ -108,14 +118,14 @@ public with sharing class TriggerTest {
 
         // Retrieve the accounts again
         List<Account> insertedAccounts = [SELECT Id, 
-                                          BillingStreet, 
-                                          BillingCity, 
-                                          BillingState, 
-                                          BillingPostalCode, 
-                                          BillingCountry 
-                                          FROM Account 
-                                          WHERE Id IN :accountsToInsert
-                                          ORDER BY AnnualRevenue ASC];
+                                        BillingStreet, 
+                                        BillingCity, 
+                                        BillingState, 
+                                        BillingPostalCode, 
+                                        BillingCountry 
+                                        FROM Account 
+                                        WHERE Id IN :accountsToInsert
+                                        ORDER BY AnnualRevenue ASC];
 
         // Assert that the Billing Address fields have been correctly copied from the Shipping Address for each account
         for (Integer i = 0; i < insertedAccounts.size(); i++) {
@@ -213,7 +223,12 @@ public with sharing class TriggerTest {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
         for (Integer i = 0; i < 400; i++) {
-            Account acc = new Account(Name = 'Test Account ' + i);
+            Account acc = new Account(Name = 'Test Account ' + i,
+            ShippingStreet = '123 Test St',
+            ShippingCity = 'Test City',
+            ShippingState = 'Test State',
+            ShippingPostalCode = '12345',
+            ShippingCountry = 'Test Country');
             accountsToInsert.add(acc);
         }
 
@@ -225,8 +240,11 @@ public with sharing class TriggerTest {
         Database.insert(accountsToInsert, dml);
         Test.stopTest();
 
+        List<Account> insertedAccounts = [SELECT Id, createdDate FROM Account WHERE Name LIKE 'Test Account%' AND createdDate = TODAY];
+
+
         // Retrieve the newly created Contacts
-        List<Contact> contacts = [SELECT Id, LastName, Email, AccountId FROM Contact WHERE AccountId IN :accountsToInsert];
+        List<Contact> contacts = [SELECT Id, LastName, Email, AccountId FROM Contact WHERE AccountId IN :insertedAccounts];
 
         // Assert that the correct number of Contacts has been created
         System.assertEquals(400, contacts.size(), 'Incorrect number of Contacts created.');
@@ -257,7 +275,7 @@ public with sharing class TriggerTest {
     * Error Message: 'Opportunity amount must be greater than 5000'
     * Trigger should only fire on update.
     */
-    @IsTest
+   @IsTest
     static void testOpportunityTrigger_amountValidation() {
         // Prepare the test data
         List<Opportunity> opportunitiesToInsert = new List<Opportunity>();
@@ -313,7 +331,12 @@ public with sharing class TriggerTest {
     @IsTest
     static void testOpportunityTrigger_deleteCloseWonOpportunity() {
         // Prepare the test data
-        Account testAccount = new Account(Name = 'Test Account', Industry = 'Banking');
+        Account testAccount = new Account(Name = 'Test Account', Industry = 'Banking',
+        ShippingStreet = '123 Test St',
+        ShippingCity = 'Test City',
+        ShippingState = 'Test State',
+        ShippingPostalCode = '12345',
+        ShippingCountry = 'Test Country');
         insert testAccount;
 
         List<Opportunity> opportunitiesToInsert = new List<Opportunity>();
@@ -351,7 +374,12 @@ public with sharing class TriggerTest {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
         for (Integer i = 0; i < 10; i++) {
-            Account testAccount = new Account(Name = 'Test Account ' + i);
+            Account testAccount = new Account(Name = 'Test Account ' + i,
+            ShippingStreet = '123 Test St',
+            ShippingCity = 'Test City',
+            ShippingState = 'Test State',
+            ShippingPostalCode = '12345',
+            ShippingCountry = 'Test Country');
             accountsToInsert.add(testAccount);
         }
         
